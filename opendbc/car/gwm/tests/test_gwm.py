@@ -3,12 +3,14 @@ import unittest
 from cereal import car, log
 from opendbc.can.parser import CANParser
 from opendbc.can.packer import CANPacker
+from opendbc.car.structs import CarParams
 from opendbc.car.gwm.interface import CarInterface
 from opendbc.car.gwm.values import CAR, DBC, MSG_ID, Signals, CarGear, GwmCarControllerParams
+from opendbc.car.gwm.fingerprints import FW_VERSIONS
 from opendbc.car.gwm.carstate import CarState
 from opendbc.car.gwm.carcontroller import CarController
 
-CarParams = car.CarParams
+Ecu = CarParams.Ecu
 
 class TestGWMInterface(unittest.TestCase):
   @classmethod
@@ -73,6 +75,17 @@ class TestGWMInterface(unittest.TestCase):
     expected_steer = int(round(0.5 * GwmCarControllerParams.STEER_MAX))
     self.assertEqual(unpacked[Signals.AP_STEERING_COMMAND], expected_steer)
     self.assertEqual(unpacked[Signals.AP_STATE], 1)
+
+class TestGWMFingerprint(unittest.TestCase):
+  def test_essential_ecus(self):
+    # Asserts standard ECUs exist for each platform
+    common_ecus = {Ecu.fwdRadar, Ecu.fwdCamera, Ecu.eps, Ecu.engine}
+    for car_model, ecus in FW_VERSIONS.items():
+      with self.subTest(car_model=car_model.value):
+        present_ecus = {ecu[0] for ecu in ecus}
+        missing_ecus = common_ecus - present_ecus
+        self.assertEqual(len(missing_ecus), 0)
+
 
 if __name__ == "__main__":
   unittest.main()
