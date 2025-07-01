@@ -1,15 +1,12 @@
 from dataclasses import dataclass
 from enum import IntFlag
-from opendbc.car import PlatformConfig, CarSpecs, DbcDict, Bus
-from opendbc.car.docs_definitions import CarDocs
-from enum import StrEnum
 
-class CAR(StrEnum):
-  GWM_HAVAL_H6_PHEV_2024 = "GWM Haval H6 PHEV 2024"
+from opendbc.car import PlatformConfig, CarSpecs, DbcDict, Bus, Platforms
+from opendbc.car.docs_definitions import CarDocs
 
 @dataclass
 class GwmCarControllerParams:
-  STEER_MAX = 2048
+  STEER_MAX = 1023  # 11-bit signed
   STEER_STEP = 2
   STEER_DELTA_UP = 15
   STEER_DELTA_DOWN = 25
@@ -33,8 +30,8 @@ class GwmPlatformConfig(PlatformConfig):
   def init(self):
     pass
 
-PLATFORMS = {
-  CAR.GWM_HAVAL_H6_PHEV_2024: GwmPlatformConfig(
+class CAR(Platforms):
+  GWM_HAVAL_H6_PHEV_2024 = GwmPlatformConfig(
     [CarDocs("GWM Haval H6 PHEV 2024", "All")],
     CarSpecs(
         mass=2040,
@@ -46,15 +43,12 @@ PLATFORMS = {
     dbc_dict('gwm_haval_h6_phev_2024', 'gwm_haval_h6_phev_2024'),
     flags=GwmFlags.PHEV,
   )
-}
 
 FINGERPRINTS = {
   CAR.GWM_HAVAL_H6_PHEV_2024: [{}],
 }
 
-DBC = {
-  CAR.GWM_HAVAL_H6_PHEV_2024: dbc_dict('gwm_haval_h6_phev_2024', 'gwm_haval_h6_phev_2024'),
-}
+DBC = CAR.create_dbc_map()
 
 class MSG_ID:
   CAR_OVERALL_SIGNALS2 = 0x60
@@ -92,10 +86,10 @@ class Buttons:
   MAIN = 4
 
 class CarGear:
-  PARK = 'P'
-  REVERSE = 'R'
-  NEUTRAL = 'N'
-  DRIVE = 'D'
+  PARK = 'park'
+  REVERSE = 'reverse'
+  NEUTRAL = 'neutral'
+  DRIVE = 'drive'
 
 class GwmChecksum:
   def __init__(self):

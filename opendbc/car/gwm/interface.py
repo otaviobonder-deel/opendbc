@@ -1,9 +1,9 @@
 from cereal import car
-from openpilot.selfdrive.car import get_safety_config
-from openpilot.selfdrive.car.interfaces import CarInterfaceBase
-from openpilot.selfdrive.car.gwm.values import CAR, DBC, CAR_INFO
-from openpilot.selfdrive.car.gwm.carstate import CarState
-from openpilot.selfdrive.car.gwm.carcontroller import CarController
+from opendbc.car import get_safety_config, structs
+from opendbc.car.interfaces import CarInterfaceBase
+from opendbc.car.gwm.values import CAR
+from opendbc.car.gwm.carstate import CarState
+from opendbc.car.gwm.carcontroller import CarController
 
 CarParams = car.CarParams
 
@@ -12,51 +12,25 @@ class CarInterface(CarInterfaceBase):
   CarController = CarController
 
   @staticmethod
-  def get_params(candidate, fingerprint=None, car_fw=None, experimental_long=False):
-    ret = CarInterfaceBase.get_std_params(candidate, fingerprint)
-    ret.carName = "gwm"
+  def _get_params(ret: structs.CarParams, candidate, fingerprint, car_fw, alpha_long, is_release, docs) -> structs.CarParams:
+    ret.brand = "gwm"
     ret.safetyConfigs = [get_safety_config(CarParams.SafetyModel.gwm)]
-    # The GWM port is a community feature, since we don't own one to test
-    ret.communityFeature = True
 
-    # Set vehicle parameters from CAR_INFO
-    if candidate in CAR_INFO:
-        info = CAR_INFO[candidate]
-        ret.mass = info.specs.mass
-        ret.wheelbase = info.specs.wheelbase
-        ret.steerRatio = info.specs.steerRatio
-        ret.centerToFront = info.specs.wheelbase * 0.44
-        ret.steerControlType = info.specs.steerControlType
-        ret.minEnableSpeed = info.specs.minEnableSpeed
-        ret.minSteerSpeed = info.specs.minSteerSpeed
+    # get vehicle params from platform config
+    ret.mass = CAR.GWM_HAVAL_H6_PHEV_2024.config.specs.mass
+    ret.wheelbase = CAR.GWM_HAVAL_H6_PHEV_2024.config.specs.wheelbase
+    ret.steerRatio = CAR.GWM_HAVAL_H6_PHEV_2024.config.specs.steerRatio
+    ret.centerToFront = ret.wheelbase * CAR.GWM_HAVAL_H6_PHEV_2024.config.specs.centerToFrontRatio
 
-    ret.steerActuatorDelay = 0.1
+    # lateral control
+    ret.steerActuatorDelay = 0.4
     ret.steerLimitTimer = 0.4
 
-    # Longitudinal control parameters
-    ret.experimentalLongitudinalAvailable = True
-    ret.openpilotLongitudinalControl = experimental_long
+    # longitudinal control
+    ret.openpilotLongitudinalControl = alpha_long
     ret.longitudinalTuning.kpBP = [0., 5., 35.]
     ret.longitudinalTuning.kpV = [1.2, 0.8, 0.5]
     ret.longitudinalTuning.kiBP = [0., 35.]
     ret.longitudinalTuning.kiV = [0.18, 0.12]
 
     return ret
-
-  def update(self, c, can_strings):
-    self.cp.update_strings(can_strings)
-    self.cp_cam.update_strings(can_strings)
-
-    ret = self.CS.update(self.cp, self.cp_cam)
-    ret.canValid = self.cp.can_valid and self.cp_cam.can_valid
-
-    # Handle events
-    events = self.create_common_events(ret)
-    ret.events = events.to_msg()
-
-    self.CS.out = ret.as_reader()
-    return self.CS.out
-
-  def apply(self, c):
-    can_sends = self.CC.update(c, self.CS)
-    return can_sends
