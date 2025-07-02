@@ -1,7 +1,6 @@
-from cereal import car
 from opendbc.can.packer import CANPacker
 from opendbc.car.interfaces import CarControllerBase
-from opendbc.car.gwm.values import DBC, CAR, MSG_ID, Signals, GwmCarControllerParams, GwmChecksum, Bus
+from opendbc.car.gwm.values import MSG_ID, Signals, GwmCarControllerParams, GwmChecksum, Bus
 
 class CarController(CarControllerBase):
   def __init__(self, dbc_names, CP):

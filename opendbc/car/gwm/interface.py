@@ -1,18 +1,16 @@
-from cereal import car
-from opendbc.car import get_safety_config, structs
+from opendbc.car import get_safety_config
 from opendbc.car.interfaces import CarInterfaceBase
 from opendbc.car.gwm.values import CAR
 from opendbc.car.gwm.carstate import CarState
 from opendbc.car.gwm.carcontroller import CarController
-
-CarParams = car.CarParams
+from opendbc.car.structs import CarParams
 
 class CarInterface(CarInterfaceBase):
   CarState = CarState
   CarController = CarController
 
   @staticmethod
-  def _get_params(ret: structs.CarParams, candidate, fingerprint, car_fw, alpha_long, is_release, docs) -> structs.CarParams:
+  def _get_params(ret: CarParams, candidate, fingerprint, car_fw, alpha_long, is_release, docs) -> CarParams:
     ret.brand = "gwm"
     ret.safetyConfigs = [get_safety_config(CarParams.SafetyModel.gwm)]
 
