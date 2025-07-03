@@ -5,7 +5,7 @@ from opendbc.car import PlatformConfig, CarSpecs, DbcDict, Bus, Platforms
 from opendbc.car.docs_definitions import CarDocs
 
 @dataclass
-class GwmCarControllerParams:
+class CarControllerParams:
   STEER_MAX = 1023  # 11-bit signed
   STEER_STEP = 2
   STEER_DELTA_UP = 15

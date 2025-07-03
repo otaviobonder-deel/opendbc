@@ -1,6 +1,6 @@
 from opendbc.can.packer import CANPacker
 from opendbc.car.interfaces import CarControllerBase
-from opendbc.car.gwm.values import MSG_ID, Signals, GwmCarControllerParams, GwmChecksum, Bus
+from opendbc.car.gwm.values import MSG_ID, Signals, CarControllerParams, GwmChecksum, Bus
 
 class CarController(CarControllerBase):
   def __init__(self, dbc_names, CP):
@@ -17,8 +17,8 @@ class CarController(CarControllerBase):
     if CC.enabled:
       steer_req = 1
       # Apply steering torque
-      apply_steer = int(round(actuators.torque * GwmCarControllerParams.STEER_MAX))
-      apply_steer = max(-GwmCarControllerParams.STEER_MAX, min(GwmCarControllerParams.STEER_MAX, apply_steer))
+      apply_steer = int(round(actuators.torque * CarControllerParams.STEER_MAX))
+      apply_steer = max(-CarControllerParams.STEER_MAX, min(CarControllerParams.STEER_MAX, apply_steer))
     else:
       steer_req = 0
       apply_steer = 0

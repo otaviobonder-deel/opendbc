@@ -1,4 +1,4 @@
-from cereal import car
+from opendbc.car import structs
 from opendbc.can.parser import CANParser
 from opendbc.car.interfaces import CarStateBase
 from opendbc.car.gwm.values import DBC, MSG_ID, Signals, CarGear, Bus
@@ -14,7 +14,7 @@ class CarState(CarStateBase):
     cp = can_parsers[Bus.pt]
     # cp_cam = can_parsers[Bus.cam] # No messages from camera bus yet
 
-    ret = car.CarState.new_message()
+    ret = structs.CarState.new_message()
 
     # vehicle speed
     ret.vEgo = cp.vl[MSG_ID.SPEED][Signals.VEHICLE_SPEED] * CV.KPH_TO_MS
