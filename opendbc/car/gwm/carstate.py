@@ -35,17 +35,26 @@ class CarState(CarStateBase):
     ret.gasPressed = ret.gas > 1e-3
 
     # gear
-    # gear = cp.vl[MSG_ID.CAR_OVERALL_SIGNALS][Signals.DRIVE_MODE]
-    ret.gearShifter = CarGear.DRIVE # FIXME: Re-enable gear parsing
+    gear = cp.vl[MSG_ID.CAR_OVERALL_SIGNALS][Signals.DRIVE_MODE]
+    if gear == 0:
+      ret.gearShifter = CarGear.park
+    elif gear == 1:
+      ret.gearShifter = CarGear.drive
+    elif gear == 2:
+      ret.gearShifter = CarGear.neutral
+    elif gear == 3:
+      ret.gearShifter = CarGear.reverse
+    else:
+      ret.gearShifter = CarGear.unknown
 
     # buttons
-    ret.leftBlinker = False  # Placeholder
-    ret.rightBlinker = False  # Placeholder
+    ret.leftBlinker = cp.vl[MSG_ID.LIGHTS][Signals.LEFT_TURN_SIGNAL] == 1
+    ret.rightBlinker = cp.vl[MSG_ID.LIGHTS][Signals.RIGHT_TURN_SIGNAL] == 1
 
     # cruise state
-    ret.cruiseState.available = True  # For now, let's assume it's always available
+    ret.cruiseState.available = cp.vl[MSG_ID.AUTOPILOT][Signals.AP_STATE] in [0, 1]
     ret.cruiseState.enabled = cp.vl[MSG_ID.AUTOPILOT][Signals.AP_STATE] == 1
-    ret.cruiseState.speed = 0 # Placeholder, will be managed by openpilot
+    ret.cruiseState.speed = cp.vl[MSG_ID.ACC][Signals.ACC_SPEED_SELECTION] * CV.KPH_TO_MS
 
 
 
@@ -60,6 +69,8 @@ class CarState(CarStateBase):
       (MSG_ID.CAR_OVERALL_SIGNALS, 50),
       (MSG_ID.CAR_OVERALL_SIGNALS2, 50),
       (MSG_ID.AUTOPILOT, 50),
+      (MSG_ID.LIGHTS, 10),
+      (MSG_ID.ACC, 10),
     ]
 
     cam_messages = []

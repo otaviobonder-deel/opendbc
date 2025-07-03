@@ -61,6 +61,9 @@ BO_ 299 AUTOPILOT: 8 XXX
  SG_ AP_CHECKSUM : 39|8@0+ (1,0) [0|255] "" XXX
  SG_ CRC : 135|8@0+ (1,0) [0|255] "" XXX
 
+CM_ SG_ 299 AP_COUNTER "rolling counter";
+CM_ SG_ 299 AP_CHECKSUM "GWM CRC5 checksum";
+
 BO_ 303 CAR_OVERALL_SIGNALS: 64 XXX
  SG_ CRC1 : 71|8@0+ (1,0) [0|255] "" XXX
  SG_ DRIVE_MODE_SIGNAL : 73|1@0+ (1,0) [0|1] "" XXX
@@ -245,3 +248,5 @@ CM_ SG_ 837 DOOR_LOCK_STATE "0 = LOCKED / 1 = UNLOCKED";
 CM_ SG_ 837 DOOR_LOCK_STATE2 "0 = LOCKED / 1 = UNLOCKED";
 CM_ SG_ 849 SEAT_BELT_DRIVER_STATE "0 = Fastened / 1 = Released";
 CM_ SG_ 849 SEAT_BELT_DRIVER_STATE2 "0 = Fastened / 1 = Released";
+
+VAL_ 299 AP_COUNTER 0 "Counter_0" 1 "Counter_1" 2 "Counter_2" 3 "Counter_3" 4 "Counter_4" 5 "Counter_5" 6 "Counter_6" 7 "Counter_7" 8 "Counter_8" 9 "Counter_9" 10 "Counter_10" 11 "Counter_11" 12 "Counter_12" 13 "Counter_13" 14 "Counter_14" 15 "Counter_15";

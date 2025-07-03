@@ -3,6 +3,7 @@ from enum import IntFlag
 
 from opendbc.car import PlatformConfig, CarSpecs, DbcDict, Bus, Platforms
 from opendbc.car.docs_definitions import CarDocs
+from opendbc.car.fw_query_definitions import FwQueryConfig, Request, StdQueries
 
 @dataclass
 class CarControllerParams:
@@ -34,11 +35,11 @@ class CAR(Platforms):
   GWM_HAVAL_H6_PHEV_2024 = GwmPlatformConfig(
     [CarDocs("GWM Haval H6 PHEV 2024", "All")],
     CarSpecs(
-        mass=2040,
-        wheelbase=2.73,
-        steerRatio=16.0,
-        centerToFrontRatio=0.44,
-        minSteerSpeed=0.0,
+        mass=2040,  # kg
+        wheelbase=2.738,  # meters from web search
+        steerRatio=16.0,  # Estimated based on similar vehicles
+        centerToFrontRatio=0.44,  # Estimated
+        minSteerSpeed=0.0,  # No minimum speed for steering
     ),
     dbc_dict('gwm_haval_h6_phev_2024', 'gwm_haval_h6_phev_2024'),
     flags=GwmFlags.PHEV,
@@ -58,6 +59,8 @@ class MSG_ID:
   AUTOPILOT = 0x12B
   CAR_OVERALL_SIGNALS = 0x12F
   BRAKE = 0x137
+  LIGHTS = 0x19C
+  ACC = 0x2AB
 
 class Signals:
   STEERING_ANGLE = "STEERING_ANGLE"
@@ -77,6 +80,9 @@ class Signals:
   DRIVE_MODE = "DRIVE_MODE"
   AP_STEERING_COMMAND = "AP_STEERING_UNDEFINED_SIGNAL1"
   AP_STATE = "AP_STATE"
+  LEFT_TURN_SIGNAL = "LEFT_TURN_SIGNAL"
+  RIGHT_TURN_SIGNAL = "RIGHT_TURN_SIGNAL"
+  ACC_SPEED_SELECTION = "ACC_SPEED_SELECTION"
 
 class Buttons:
   NONE = 0
@@ -103,3 +109,14 @@ class GwmChecksum:
     for i in range(len_msg):
         checksum = self.gwm_crc_lookup[(checksum ^ msg[i]) & 0x1F]
     return checksum
+
+
+FW_QUERY_CONFIG = FwQueryConfig(
+  requests=[
+    Request(
+      [StdQueries.TESTER_PRESENT_REQUEST, StdQueries.SUPPLIER_SOFTWARE_VERSION_REQUEST],
+      [StdQueries.TESTER_PRESENT_RESPONSE, StdQueries.SUPPLIER_SOFTWARE_VERSION_RESPONSE],
+      bus=0,
+    ),
+  ]
+)

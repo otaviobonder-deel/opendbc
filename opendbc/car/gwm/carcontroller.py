@@ -1,6 +1,7 @@
 from opendbc.can.packer import CANPacker
 from opendbc.car.interfaces import CarControllerBase
-from opendbc.car.gwm.values import MSG_ID, Signals, CarControllerParams, GwmChecksum, Bus
+from opendbc.car.gwm.values import CarControllerParams, GwmChecksum, Bus
+from opendbc.car.gwm import gwmcan
 
 class CarController(CarControllerBase):
   def __init__(self, dbc_names, CP):
@@ -23,17 +24,10 @@ class CarController(CarControllerBase):
       steer_req = 0
       apply_steer = 0
 
-    # Create the steering command message
-    # NOTE: This message requires a checksum and counter.
-    # The GWM checksum is custom.
-    values = {
-      Signals.AP_STEERING_COMMAND: apply_steer,
-      Signals.AP_STATE: steer_req,
-    }
-
-    # TODO: Implement proper checksum and counter logic using self.gwm_checksum
-    # For now, assuming packer handles it based on DBC.
-    can_sends.append(self.packer.make_can_msg(MSG_ID.AUTOPILOT, Bus.pt, values))
+    # Create the steering command message with proper counter
+    # Counter increments every 20ms (50Hz)
+    counter = self.frame % 16
+    can_sends.append(gwmcan.create_steer_command(self.packer, apply_steer, steer_req, counter))
 
     self.frame += 1
     return can_sends
