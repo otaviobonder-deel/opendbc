@@ -82,8 +82,6 @@ static void gwm_rx_hook(const CANPacket_t *to_push) {
     bool cruise_engaged = (GET_BYTE(to_push, 2) >> 2) & 0x3;
     pcm_cruise_check(cruise_engaged);
   }
-
-  generic_rx_checks((addr == GWM_MSG_AUTOPILOT) && (bus == 0));
 }
 
 static bool gwm_tx_hook(const CANPacket_t *to_send) {
@@ -112,7 +110,7 @@ static bool gwm_tx_hook(const CANPacket_t *to_send) {
   return tx;
 }
 
-static int gwm_fwd_hook(int bus_num, int addr) {
+static bool gwm_fwd_hook(int bus_num, int addr) {
   int bus_fwd = -1;
 
   if (bus_num == 0) {
@@ -126,7 +124,8 @@ static int gwm_fwd_hook(int bus_num, int addr) {
     }
   }
 
-  return bus_fwd;
+  // Return true if blocked, false otherwise
+  return bus_fwd == -1;
 }
 
 // RX message checks
@@ -135,16 +134,6 @@ static RxCheck gwm_rx_checks[] = {
   {.msg = {{0x103, 0, 8, .frequency = 50U}, { 0 }, { 0 }}},
   {.msg = {{GWM_MSG_CAR_OVERALL_SIGNALS2, 0, 8, .frequency = 50U}, { 0 }, { 0 }}},
   {.msg = {{GWM_MSG_AUTOPILOT, 0, 8, .frequency = 50U}, { 0 }, { 0 }}},
-};
-
-const safety_hooks gwm_hooks = {
-  .init = gwm_init,
-  .rx = gwm_rx_hook,
-  .tx = gwm_tx_hook,
-  .fwd = gwm_fwd_hook,
-  .get_counter = gwm_get_counter,
-  .get_checksum = gwm_get_checksum,
-  .compute_checksum = gwm_compute_checksum,
 };
 
 static safety_config gwm_init(uint16_t param) {
@@ -157,3 +146,13 @@ static safety_config gwm_init(uint16_t param) {
     .disable_forwarding = false,
   };
 }
+
+const safety_hooks gwm_hooks = {
+  .init = gwm_init,
+  .rx = gwm_rx_hook,
+  .tx = gwm_tx_hook,
+  .fwd = gwm_fwd_hook,
+  .get_counter = gwm_get_counter,
+  .get_checksum = gwm_get_checksum,
+  .compute_checksum = gwm_compute_checksum,
+};
