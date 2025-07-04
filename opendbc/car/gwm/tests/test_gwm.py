@@ -5,10 +5,10 @@ from opendbc.can.parser import CANParser
 from opendbc.can.packer import CANPacker
 from opendbc.car.structs import CarParams
 from opendbc.car.gwm.interface import CarInterface
-from opendbc.car.gwm.values import CAR, DBC, MSG_ID, Signals, CarGear, CarControllerParams
+from opendbc.car.gwm.values import CAR, DBC, MSG_ID, Signals, CarControllerParams
 from opendbc.car.gwm.fingerprints import FW_VERSIONS
 
-
+GearShifter = car.CarState.GearShifter
 Ecu = CarParams.Ecu
 
 class TestGWMInterface(unittest.TestCase):
@@ -31,7 +31,7 @@ class TestGWMInterface(unittest.TestCase):
     msgs.append(packer.make_can_msg(MSG_ID.SPEED, 0, {Signals.VEHICLE_SPEED: 50.0}))
     msgs.append(packer.make_can_msg(MSG_ID.CAR_OVERALL_SIGNALS2, 0, {Signals.BRAKE_SIGNAL: 1, Signals.GAS_POSITION: 50.0}))
     msgs.append(packer.make_can_msg(MSG_ID.BRAKE, 0, {Signals.BRAKE_PRESSURE: 100.0}))
-    msgs.append(packer.make_can_msg(MSG_ID.CAR_OVERALL_SIGNALS, 0, {Signals.DRIVE_MODE: 4}))
+    msgs.append(packer.make_can_msg(MSG_ID.CAR_OVERALL_SIGNALS, 0, {Signals.DRIVE_MODE: 1}))
     msgs.append(packer.make_can_msg(MSG_ID.AUTOPILOT, 0, {Signals.AP_STATE: 1}))
 
     # All messages are at timestamp 0, create the can_packets structure
@@ -48,7 +48,7 @@ class TestGWMInterface(unittest.TestCase):
     self.assertAlmostEqual(cs.brake, 100.0)
     self.assertAlmostEqual(cs.gas, 0.5)
     self.assertTrue(cs.gasPressed)
-    self.assertEqual(cs.gearShifter, CarGear.DRIVE)
+    self.assertEqual(cs.gearShifter, GearShifter.drive)
     self.assertTrue(cs.cruiseState.enabled)
 
   def test_steering_control(self):

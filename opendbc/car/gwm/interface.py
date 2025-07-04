@@ -24,13 +24,8 @@ class CarInterface(CarInterfaceBase):
     ret.steerActuatorDelay = 0.4
     ret.steerLimitTimer = 0.4
 
-    # lateral tuning
-    ret.lateralTuning.torque.useSteeringAngle = False
-    ret.lateralTuning.torque.kp = 1.5
-    ret.lateralTuning.torque.ki = 0.05
-    ret.lateralTuning.torque.kf = 1.0
-    ret.lateralTuning.torque.friction = 0.1
-    ret.lateralTuning.torque.steeringAngleDeadzoneDeg = 0.0
+    # lateral tuning - use configure_torque_tune to properly initialize
+    CarInterfaceBase.configure_torque_tune(candidate, ret.lateralTuning)
 
     # longitudinal control
     ret.openpilotLongitudinalControl = alpha_long

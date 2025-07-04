@@ -45,10 +45,6 @@ class CAR(Platforms):
     flags=GwmFlags.PHEV,
   )
 
-FINGERPRINTS = {
-  CAR.GWM_HAVAL_H6_PHEV_2024: [{}],
-}
-
 DBC = CAR.create_dbc_map()
 
 class MSG_ID:
