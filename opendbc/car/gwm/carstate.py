@@ -2,7 +2,7 @@ from opendbc.car import structs
 from opendbc.can.parser import CANParser
 from opendbc.car.gwm.values import DBC, Bus, MSG_ID, Signals, CarControllerParams
 from opendbc.car.interfaces import CarStateBase
-from common.conversions import Conversions as CV
+from opendbc.car.common.conversions import Conversions as CV
 
 GearShifter = structs.CarState.GearShifter
 

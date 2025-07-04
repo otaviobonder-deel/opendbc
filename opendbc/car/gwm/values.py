@@ -1,11 +1,10 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import IntFlag
 
 from opendbc.car import PlatformConfig, CarSpecs, DbcDict, Bus, Platforms
-from opendbc.car.docs_definitions import CarDocs
+from opendbc.car.docs_definitions import CarDocs, CarParts, CarHarness
 from opendbc.car.fw_query_definitions import FwQueryConfig, Request, StdQueries
 
-@dataclass
 class CarControllerParams:
   STEER_MAX = 1023  # 11-bit signed
   STEER_STEP = 2
@@ -17,6 +16,9 @@ class CarControllerParams:
   ACCEL_MIN = -3.5
   ACCEL_MAX = 2.0
 
+  def __init__(self, CP):
+    pass  # No additional initialization needed for GWM
+
 def dbc_dict(pt_dbc, cam_dbc) -> DbcDict:
   return {
     Bus.pt: pt_dbc,
@@ -27,13 +29,18 @@ class GwmFlags(IntFlag):
   PHEV = 1
 
 @dataclass
+class GwmCarDocs(CarDocs):
+  package: str = "All"
+  car_parts: CarParts = field(default_factory=lambda: CarParts.common([CarHarness.gwm_a]))
+
+@dataclass
 class GwmPlatformConfig(PlatformConfig):
   def init(self):
     pass
 
 class CAR(Platforms):
   GWM_HAVAL_H6_PHEV_2024 = GwmPlatformConfig(
-    [CarDocs("GWM Haval H6 PHEV 2024", "All")],
+    [GwmCarDocs("GWM Haval H6 PHEV 2024", "All")],
     CarSpecs(
         mass=2040,  # kg
         wheelbase=2.738,  # meters from web search
