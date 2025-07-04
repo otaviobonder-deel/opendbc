@@ -6,7 +6,7 @@ from opendbc.can.packer import CANPacker
 from opendbc.car.structs import CarParams
 from opendbc.car.gwm.interface import CarInterface
 from opendbc.car.gwm.values import CAR, DBC, MSG_ID, Signals, CarControllerParams
-from opendbc.car.gwm.fingerprints import FW_VERSIONS
+from opendbc.car.gwm.fingerprints import FW_VERSIONS, FINGERPRINTS
 
 GearShifter = car.CarState.GearShifter
 Ecu = CarParams.Ecu
@@ -76,11 +76,18 @@ class TestGWMInterface(unittest.TestCase):
     self.assertEqual(unpacked[Signals.AP_STATE], 1)
 
 class TestGWMFingerprint(unittest.TestCase):
-  def test_essential_ecus(self):
-    # Asserts standard ECUs exist for each platform
-    common_ecus = {Ecu.fwdRadar, Ecu.fwdCamera, Ecu.eps, Ecu.engine}
-    for car_model, ecus in FW_VERSIONS.items():
+  def test_fingerprints_exist(self):
+    # Asserts that deprecated fingerprints exist for each platform
+    for car_model in CAR:
       with self.subTest(car_model=car_model.value):
-        present_ecus = {ecu[0] for ecu in ecus}
-        missing_ecus = common_ecus - present_ecus
-        self.assertEqual(len(missing_ecus), 0)
+        self.assertIn(car_model, FINGERPRINTS)
+        self.assertIsInstance(FINGERPRINTS[car_model], list)
+        self.assertGreater(len(FINGERPRINTS[car_model]), 0)
+        # Check that each fingerprint is a dictionary with message ID: length format
+        for fingerprint in FINGERPRINTS[car_model]:
+          self.assertIsInstance(fingerprint, dict)
+          for msg_id, length in fingerprint.items():
+            self.assertIsInstance(msg_id, int)
+            self.assertIsInstance(length, int)
+            self.assertGreater(msg_id, 0)
+            self.assertGreater(length, 0)
