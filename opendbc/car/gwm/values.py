@@ -35,7 +35,7 @@ class GWMFlags(IntFlag):
 class GWMCarDocs(CarDocs):
   package: str = "Stock"
 
-  def init_make(self):
+  def init_make(self, CP: CarParams):
     self.car_parts = CarParts.common([CarHarness.custom])
 
 

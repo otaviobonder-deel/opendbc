@@ -17,7 +17,16 @@ FINGERPRINTS = {
 FW_VERSIONS = {
   CAR.GWM_HAVAL_H6_PHEV: {
     (Ecu.engine, 0x7e0, None): [
-      b'placeholder_fw_version',  # Will be replaced with actual firmware versions
+      b'\x01GWM_ENGINE_PLACEHOLDER\x00\x00\x00\x00',
+    ],
+    (Ecu.eps, 0x7a1, None): [
+      b'\x01GWM_EPS_PLACEHOLDER\x00\x00\x00\x00',
+    ],
+    (Ecu.abs, 0x7e1, None): [
+      b'\x01GWM_ABS_PLACEHOLDER\x00\x00\x00\x00',
+    ],
+    (Ecu.fwdCamera, 0x7e2, None): [
+      b'\x01GWM_CAMERA_PLACEHOLDER\x00\x00\x00\x00',
     ],
   },
 }
