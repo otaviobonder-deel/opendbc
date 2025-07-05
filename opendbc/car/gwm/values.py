@@ -53,13 +53,12 @@ class CAR(Platforms):
     )
 
 
-# Basic FW query config - will expand when we know more about the ECUs
+# Basic FW query config - minimal setup for legacy fingerprint fallback
 FW_QUERY_CONFIG = FwQueryConfig(
   requests=[
     Request(
       [StdQueries.TESTER_PRESENT_REQUEST, StdQueries.MANUFACTURER_SOFTWARE_VERSION_REQUEST],
       [StdQueries.TESTER_PRESENT_RESPONSE, StdQueries.MANUFACTURER_SOFTWARE_VERSION_RESPONSE],
-      whitelist_ecus=[Ecu.engine, Ecu.eps, Ecu.abs, Ecu.fwdCamera],
       logging=True,
     ),
   ],

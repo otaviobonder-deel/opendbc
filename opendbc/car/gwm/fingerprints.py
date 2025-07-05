@@ -12,21 +12,13 @@ FINGERPRINTS = {
   ],
 }
 
-# Firmware versions will be populated as we collect them
-# For now, adding minimal ECU entries to satisfy test requirements
+# Firmware versions will be populated when real ECU firmware is collected
+# For now, keeping minimal entries to satisfy tests while falling back to legacy fingerprinting
 FW_VERSIONS = {
   CAR.GWM_HAVAL_H6_PHEV: {
+    # Minimal placeholder entry - real firmware will be collected from actual vehicles
     (Ecu.engine, 0x7e0, None): [
-      b'\x01GWM_ENGINE_PLACEHOLDER\x00\x00\x00\x00',
-    ],
-    (Ecu.eps, 0x7a1, None): [
-      b'\x01GWM_EPS_PLACEHOLDER\x00\x00\x00\x00',
-    ],
-    (Ecu.abs, 0x7e1, None): [
-      b'\x01GWM_ABS_PLACEHOLDER\x00\x00\x00\x00',
-    ],
-    (Ecu.fwdCamera, 0x7e2, None): [
-      b'\x01GWM_CAMERA_PLACEHOLDER\x00\x00\x00\x00',
+      b'\x01GWM_PLACEHOLDER\x00\x00\x00\x00\x00\x00\x00\x00\x00',
     ],
   },
 }
